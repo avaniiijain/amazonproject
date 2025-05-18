@@ -70,8 +70,6 @@ def clean_data(df):
     
     # Fill any remaining NaN values with 0
     df = df.fillna(0)
-    # droping rows where values are 0.00 and 0
-    df = df[(df[['price', 'rating', 'disk_size', 'ram']] != 0).all(axis=1)]
 
     return df
 
@@ -147,11 +145,7 @@ def setup_database(connection):
     """
     execute_query(connection, create_laptop_table)
 
-# Save the cleaned data to a new CSV file
-def save_cleaned_data(df, filename='cleaned_laptop.csv'):
-    """Save the cleaned DataFrame to a CSV file"""
-    df.to_csv(filename, index=False)
-    print(f"Cleaned data saved to {filename}")
+
 
 # 7. MAIN EXECUTION FUNCTION
 def main():
@@ -178,15 +172,6 @@ def main():
     connection.close()
     print("Database connection closed")
 
-    # Clean the data
-    df = clean_data(df)
-    print("\nData info after cleaning:")
-    print(df.info())
-
-    # Save cleaned data to CSV
-    save_cleaned_data(df, 'cleaned_laptop.csv')
-    print("Cleaned data preview:")
-    print(df.head(3))
 
 # Execute the main function
 if __name__ == "__main__":
