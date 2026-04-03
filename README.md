@@ -56,10 +56,11 @@
   <p>After loading the dataset into MySQL, data analysts can:</p>
   
   <ul>
-    <li>🔍 Filter laptops by specs (RAM, storage, rating, price)</li>
-    <li>💰 Compare price-to-performance or price-per-GB metrics</li>
-    <li>🏆 Rank laptops based on rating and value</li>
-    <li>📊 Visualize market trends, brand offerings, or price distribution</li>
+    <li>Filter laptops by specifications (RAM, storage, rating, price)</li>
+    <li>Calculate and compare price-per-GB efficiency and price-to-performance ratios across listings</li>
+    <li>Rank laptops by value and rating within RAM and storage tiers</li>
+    <li>Identify market segmentation patterns across Budget, Mid-Range, and Premium price tiers</li>
+    <li>Export structured datasets to Tableau or Power BI for trend visualization and strategic pricing insights</li>
   </ul>
   
   <h2>🛠 How to Run</h2>
@@ -84,12 +85,29 @@
   
   <ol>
     <li>
-      <p>Find Best Value Laptops (Price Per GB)</p>
-      <pre><code class="language-sql">SELECT title, price, disk_size, ROUND(price / disk_size, 2) AS price_per_gb
+      <p>Which price tier dominates the Amazon laptop market and offers the best balance of cost and customer satisfaction?</p>
+      <pre><code class="language-sql">WITH laptop_tiers AS (
+SELECT title, price, rating, disk_size, ram,
+CASE WHEN price < 500 THEN 'Budget'
+WHEN price BETWEEN 500 AND 1000 THEN 'Mid-Range'
+ELSE 'Premium' END AS price_tier
 FROM laptop
-WHERE disk_size > 0 AND price > 0
-ORDER BY price_per_gb ASC
-LIMIT 10;</code></pre>
+)
+  
+SELECT price_tier, COUNT(*) AS total_laptops, 
+ROUND(AVG(CASE WHEN price > 0 THEN price END), 2) AS avg_price,
+ROUND(AVG(rating), 2) AS avg_rating
+FROM laptop_tiers
+GROUP BY price_tier
+ORDER BY avg_price ASC;</code></pre>
+    </li>
+     <li>
+      <p>Which laptops offer the best value (price per GB of storage) within each RAM tier?</p>
+      <pre><code class="language-sql">SELECT title, ram, price, rating,
+ROUND(price / disk_size, 2) AS price_per_gb,
+RANK() OVER (PARTITION BY ram ORDER BY price / disk_size ASC) AS value_rank
+FROM laptop
+WHERE disk_size > 0 AND price > 0;</code></pre>
     </li>
     <li>
       <p>Retrieve Laptops by User Requirement</p>
