@@ -160,7 +160,7 @@ def main():
     print(df.info())
     
     # Connect to database
-    connection = create_connection("127.0.0.1", "root", "Ammu$2020", "amazon")
+    connection = create_connection("127.0.0.1", "root", "your_password", "amazon")
     
     # Setup database schema
     setup_database(connection)
